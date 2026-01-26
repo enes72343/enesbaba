@@ -257,10 +257,10 @@ async function init(){
 }
 
 function renderSources(){
-    sources.innerHTML='<h2>Sources</h2>' + Object.keys(data).map(k=>
+    sources.innerHTML='<h2>Seçimini Yap :D</h2>' + Object.keys(data).map(k=>
     `<div class="source" onclick="selectSource('${k}',this)">
         ${k.toUpperCase()}
-        <small>${data[k].length} entries</small>
+        <small>${data[k].length} hesap</small>
      </div>`
     ).join('');
 }
