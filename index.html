@@ -9,54 +9,71 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{
     font-family:Segoe UI,Tahoma,sans-serif;
-    background:linear-gradient(135deg,#667eea,#764ba2);
     min-height:100vh;
-    padding:20px
+    background:#0f1225;
+    color:#fff;
+    overflow-x:hidden
 }
+
+/* ⭐ YILDIZ ARKA PLAN */
+#stars{
+    position:fixed;
+    inset:0;
+    z-index:-1
+}
+
 .container{
     max-width:900px;
     margin:auto;
-    background:#fff;
-    border-radius:16px;
+    padding:20px
+}
+.panel{
+    background:rgba(20,24,60,.9);
+    border-radius:18px;
+    box-shadow:0 20px 40px rgba(0,0,0,.5);
     overflow:hidden;
-    box-shadow:0 20px 40px rgba(0,0,0,.15)
+    backdrop-filter:blur(6px)
 }
 .header{
-    background:linear-gradient(135deg,#2c3e50,#34495e);
-    color:#fff;
     padding:30px;
-    text-align:center
-}
-.content{padding:25px}
-.stats{
-    background:#f1f3f5;
-    padding:12px;
-    border-radius:8px;
     text-align:center;
-    margin-bottom:15px;
-    font-weight:500
+    background:linear-gradient(135deg,#1b1f4a,#272c6d)
 }
-.file-list{
-    background:#fafafa;
-    border:1px solid #e9ecef;
+.header h1{font-size:2.2rem}
+.header p{opacity:.8;margin-top:6px}
+
+.content{padding:25px}
+
+.stats{
+    background:#161a40;
+    padding:12px;
     border-radius:10px;
-    padding:10px;
+    text-align:center;
+    margin-bottom:15px
+}
+
+.file-list{
+    background:#11143a;
+    border-radius:12px;
+    padding:12px;
     margin-bottom:25px
 }
 .file-item{
     display:flex;
     justify-content:space-between;
-    padding:8px;
-    font-size:.95rem
+    padding:6px 0;
+    font-size:.9rem;
+    opacity:.85
 }
+
 .account-types{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
     gap:15px
 }
 .account-card{
-    background:#f8f9fa;
-    border-radius:12px;
+    background:#161a40;
+    border-radius:14px;
     padding:18px 10px;
     text-align:center;
     cursor:pointer;
@@ -65,15 +82,16 @@ body{
 }
 .account-card:hover{
     transform:translateY(-4px);
-    box-shadow:0 8px 18px rgba(0,0,0,.12)
+    box-shadow:0 10px 25px rgba(0,0,0,.4)
 }
 .account-card.selected{
     border-color:#27ae60;
-    background:#eafaf1
+    background:#1c2b2f
 }
-.account-icon{font-size:2.2rem;margin-bottom:6px}
-.account-name{font-weight:600}
-.account-count{font-size:.85rem;color:#6c757d}
+.account-icon{font-size:2.2rem}
+.account-name{font-weight:600;margin-top:6px}
+.account-count{font-size:.8rem;opacity:.7}
+
 .controls{
     display:flex;
     justify-content:center;
@@ -83,119 +101,146 @@ body{
 }
 .btn{
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     padding:14px 26px;
     font-size:1rem;
     font-weight:600;
-    cursor:pointer
+    cursor:pointer;
+    color:#fff
 }
 .btn-success{
-    background:linear-gradient(135deg,#27ae60,#219a52);
-    color:#fff
+    background:linear-gradient(135deg,#27ae60,#1e8f50)
 }
 .btn-secondary{
-    background:linear-gradient(135deg,#3498db,#2980b9);
-    color:#fff
+    background:linear-gradient(135deg,#3498db,#21618c)
 }
-.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
 .result{
-    background:#f1f3f5;
-    border-radius:12px;
-    padding:20px
+    background:#0f1438;
+    border-radius:14px;
+    padding:20px;
+    margin-top:15px
 }
 .account-result{
-    background:#fff;
+    background:#161a40;
     border:2px solid #27ae60;
-    border-radius:12px;
+    border-radius:14px;
     padding:20px;
     text-align:center
 }
-.account-email{font-size:1.2rem;font-weight:600}
-.account-password{font-family:monospace;color:#e74c3c;margin:10px 0}
+.account-email{font-size:1.1rem;font-weight:600}
+.account-password{
+    font-family:monospace;
+    color:#ff7675;
+    margin:12px 0
+}
 .copy-btn{
     background:#3498db;
-    color:#fff;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
     padding:10px 18px;
-    cursor:pointer
+    cursor:pointer;
+    color:#fff
 }
+
 .loading{text-align:center}
 .spinner{
     width:36px;height:36px;
-    border:4px solid #ddd;
+    border:4px solid #333;
     border-top:4px solid #3498db;
     border-radius:50%;
     margin:10px auto;
     animation:spin 1s linear infinite
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-.error{
-    background:#f8d7da;
-    color:#721c24;
-    padding:12px;
-    border-radius:8px;
-    text-align:center
+
+@media(max-width:600px){
+    .header h1{font-size:1.7rem}
 }
 </style>
 </head>
 
 <body>
+
+<canvas id="stars"></canvas>
+
 <div class="container">
-    <div class="header">
-        <h1>🎲 Random Hesap Dağıtıcı</h1>
-        <p>Aynı klasördeki TXT dosyalarından rastgele hesap verir</p>
+<div class="panel">
+
+<div class="header">
+    <h1>🎲 Random Hesap Dağıtıcı</h1>
+    <p>Sorgu paneli – rastgele hesap seçimi</p>
+</div>
+
+<div class="content">
+    <div class="stats" id="stats">Dosyalar taranıyor…</div>
+    <div class="file-list" id="fileList"></div>
+
+    <h2 style="text-align:center;margin:20px 0">🎯 Hesap Türü</h2>
+    <div class="account-types" id="accountTypes"></div>
+
+    <div class="controls">
+        <button class="btn btn-success" id="getBtn" disabled>🎲 Hesap Getir</button>
+        <button class="btn btn-secondary" id="againBtn" style="display:none">🔄 Yenisi</button>
     </div>
 
-    <div class="content">
-        <div class="stats" id="stats">Dosyalar taranıyor...</div>
-        <div class="file-list" id="fileList"></div>
-
-        <h2 style="text-align:center;margin:20px 0">🎯 Hesap Türü</h2>
-        <div class="account-types" id="accountTypes"></div>
-
-        <div class="controls">
-            <button class="btn btn-success" id="getBtn" disabled>🎲 Hesap Getir</button>
-            <button class="btn btn-secondary" id="againBtn" style="display:none">🔄 Yenisi</button>
+    <div class="result" id="result" style="display:none">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Yükleniyor…
         </div>
-
-        <div class="result" id="result" style="display:none">
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                Yükleniyor...
-            </div>
-            <div id="resultContent"></div>
-        </div>
+        <div id="resultContent"></div>
     </div>
 </div>
 
+</div>
+</div>
+
 <script>
+/* ⭐ YILDIZ ANİMASYONU */
+const canvas=document.getElementById('stars');
+const ctx=canvas.getContext('2d');
+let w,h,stars=[];
+function resize(){
+    w=canvas.width=window.innerWidth;
+    h=canvas.height=window.innerHeight;
+}
+window.onresize=resize;resize();
+
+for(let i=0;i<120;i++){
+    stars.push({
+        x:Math.random()*w,
+        y:Math.random()*h,
+        r:Math.random()*1.5+0.5,
+        s:Math.random()*0.5+0.2
+    });
+}
+function animate(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle="#fff";
+    stars.forEach(s=>{
+        ctx.globalAlpha=Math.random();
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+        s.y+=s.s;
+        if(s.y>h){s.y=0;s.x=Math.random()*w}
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* 📂 HESAP SİSTEMİ */
 const FILES=[
- 'spotify',
- 'disneyplus',
- 'tabii',
- 'tabipremium',
- 'origin',
- 'uplay',
- 'discord',
- 'minecraft',
- 'instagram',
- 'facebook'
+ 'spotify','disneyplus','tabii','tabipremium',
+ 'origin','uplay','discord','minecraft','instagram','facebook'
 ];
-
 const ICONS={
- spotify:'🎵',
- disneyplus:'🏰',
- tabii:'📺',
- tabipremium:'⭐',
- origin:'🕹️',
- uplay:'🎯',
- discord:'💬',
- minecraft:'⛏️',
- instagram:'📷',
- facebook:'👥'
+ spotify:'🎵',disneyplus:'🏰',tabii:'📺',tabipremium:'⭐',
+ origin:'🕹️',uplay:'🎯',discord:'💬',minecraft:'⛏️',
+ instagram:'📷',facebook:'👥'
 };
-
 let accounts={},selected=null;
 
 async function init(){
@@ -206,16 +251,16 @@ async function init(){
      if(r.ok){found.push(f);load(f)}
    }catch{}
  }
- document.getElementById('stats').innerText=
-   found.length?`Bulunanlar: ${found.join(', ').toUpperCase()}`:'TXT yok';
+ stats.innerText=found.length
+   ?`Bulunan dosyalar: ${found.join(', ').toUpperCase()}`
+   :'TXT bulunamadı';
  renderFiles(found);
  renderCards(found);
 }
-
-async function load(type){
- const r=await fetch(type+'.txt');
- const t=await r.text();
- accounts[type]=t.split('\n')
+async function load(t){
+ const r=await fetch(t+'.txt');
+ const txt=await r.text();
+ accounts[t]=txt.split('\n')
    .map(l=>l.trim())
    .filter(l=>l.includes(':'))
    .map(l=>{
@@ -223,56 +268,46 @@ async function load(type){
      return{email:l.slice(0,i),pass:l.slice(i+1)}
    });
 }
-
-function renderFiles(types){
- fileList.innerHTML=types.map(t=>
- `<div class="file-item"><span>${t}.txt</span><span>${accounts[t]?.length||'...'}</span></div>`
+function renderFiles(t){
+ fileList.innerHTML=t.map(x=>
+ `<div class="file-item"><span>${x}.txt</span><span>${accounts[x]?.length||'…'}</span></div>`
  ).join('');
 }
-
-function renderCards(types){
- accountTypes.innerHTML=types.map(t=>
- `<div class="account-card" onclick="selectType('${t}')" id="c-${t}">
-   <div class="account-icon">${ICONS[t]||'📁'}</div>
-   <div class="account-name">${t.toUpperCase()}</div>
-   <div class="account-count">${accounts[t]?.length||0} hesap</div>
+function renderCards(t){
+ accountTypes.innerHTML=t.map(x=>
+ `<div class="account-card" id="c-${x}" onclick="selectType('${x}')">
+   <div class="account-icon">${ICONS[x]||'📁'}</div>
+   <div class="account-name">${x.toUpperCase()}</div>
+   <div class="account-count">${accounts[x]?.length||0} hesap</div>
  </div>`
  ).join('');
 }
-
 function selectType(t){
  document.querySelectorAll('.account-card').forEach(c=>c.classList.remove('selected'));
  document.getElementById('c-'+t).classList.add('selected');
- selected=t;
- getBtn.disabled=false;
+ selected=t;getBtn.disabled=false;
 }
-
 function getAccount(){
  if(!selected)return;
  result.style.display='block';
  loading.style.display='block';
  resultContent.innerHTML='';
  setTimeout(()=>{
-   const list=accounts[selected];
-   const a=list[Math.floor(Math.random()*list.length)];
+   const a=accounts[selected][Math.floor(Math.random()*accounts[selected].length)];
    loading.style.display='none';
    resultContent.innerHTML=
    `<div class="account-result">
      <div class="account-email">${a.email}</div>
      <div class="account-password">${a.pass}</div>
-     <button class="copy-btn" onclick="copy('${a.email}','${a.pass}')">📋 Kopyala</button>
+     <button class="copy-btn" onclick="navigator.clipboard.writeText('Email: ${a.email}\\nŞifre: ${a.pass}')">📋 Kopyala</button>
    </div>`;
    againBtn.style.display='inline-block';
  },500);
 }
-
-function copy(e,p){
- navigator.clipboard.writeText(`Email: ${e}\nŞifre: ${p}`);
-}
-
 getBtn.onclick=getAccount;
 againBtn.onclick=getAccount;
 init();
 </script>
+
 </body>
 </html>
