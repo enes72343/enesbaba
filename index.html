@@ -3,202 +3,240 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Query Interface</title>
+<title>Space Query Interface</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
-    font-family:JetBrains Mono,Consolas,monospace;
-    background:#02040f;
-    color:#d1d5db;
-    height:100vh;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:#000;
+    color:#e5e7eb;
+    min-height:100vh;
     overflow:hidden
 }
 
 /* BACKGROUND */
-canvas{position:fixed;inset:0;z-index:-2}
-.grid{
+canvas{
     position:fixed;
     inset:0;
-    background:
-      linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
-    background-size:40px 40px;
-    z-index:-1;
-    animation:gridMove 30s linear infinite
-}
-@keyframes gridMove{
-    from{background-position:0 0,0 0}
-    to{background-position:400px 400px,400px 400px}
+    z-index:-1
 }
 
 /* LAYOUT */
 .app{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px
+}
+
+.shell{
+    width:100%;
+    max-width:1100px;
     display:grid;
-    grid-template-columns:260px 1fr 360px;
-    height:100vh
+    grid-template-columns:280px 1fr;
+    gap:24px
 }
 
 /* LEFT */
-.sidebar{
-    border-right:1px solid rgba(255,255,255,.08);
-    padding:18px;
-    overflow:auto
+.sources{
+    background:rgba(10,10,20,.65);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:20px;
+    backdrop-filter:blur(8px)
 }
-.sidebar h2{
+.sources h2{
     font-size:.9rem;
-    margin-bottom:14px;
-    opacity:.7
+    opacity:.6;
+    margin-bottom:16px
 }
 .source{
-    padding:10px;
+    padding:12px;
+    border-radius:12px;
     border:1px solid rgba(255,255,255,.08);
-    border-radius:10px;
     margin-bottom:10px;
     cursor:pointer;
     transition:.2s
 }
 .source:hover{background:rgba(255,255,255,.05)}
 .source.active{
-    border-color:#22c55e;
-    background:rgba(34,197,94,.12)
+    border-color:#38bdf8;
+    background:rgba(56,189,248,.15)
 }
-.source small{opacity:.6}
-
-/* CENTER */
-.center{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:30px;
-    padding:20px
-}
-.display{
-    width:100%;
-    max-width:520px;
-    background:#050820;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:18px;
-    padding:26px;
-    text-align:center;
-    box-shadow:0 0 40px rgba(34,197,94,.15)
-}
-.display h1{
-    font-size:1.4rem;
-    margin-bottom:10px;
-    font-weight:600
-}
-.display p{
-    font-size:.85rem;
+.source small{
+    display:block;
+    margin-top:4px;
+    font-size:.75rem;
     opacity:.6
 }
-.action{
-    padding:14px 36px;
-    border:none;
-    border-radius:14px;
-    font-size:.9rem;
-    font-weight:600;
-    background:linear-gradient(135deg,#22c55e,#16a34a);
-    color:#02040f;
-    cursor:pointer
-}
-.action:disabled{opacity:.4}
 
 /* RIGHT */
-.output{
-    border-left:1px solid rgba(255,255,255,.08);
-    padding:18px;
-    overflow:auto
+.main{
+    background:rgba(8,8,18,.7);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    padding:28px;
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+    backdrop-filter:blur(10px)
 }
-.output h2{
-    font-size:.9rem;
-    margin-bottom:12px;
-    opacity:.7
+
+.header h1{
+    font-size:1.6rem;
+    font-weight:600
 }
-.result{
-    background:#050820;
+.header p{
+    font-size:.85rem;
+    opacity:.6;
+    margin-top:6px
+}
+
+.action{
+    align-self:flex-start;
+    padding:14px 34px;
+    border:none;
     border-radius:14px;
-    padding:18px;
-    border:1px solid rgba(255,255,255,.08)
+    background:linear-gradient(135deg,#38bdf8,#2563eb);
+    color:#000;
+    font-weight:600;
+    cursor:pointer
 }
-.email{word-break:break-all;font-weight:600}
-.pass{margin:12px 0;color:#f87171}
+.action:disabled{
+    opacity:.4;
+    cursor:not-allowed
+}
+
+.output{
+    background:#02030a;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    padding:20px;
+    min-height:140px
+}
+.output .email{
+    font-weight:600;
+    word-break:break-all
+}
+.output .pass{
+    margin:14px 0;
+    font-family:monospace;
+    color:#fb7185
+}
 .copy{
-    padding:10px;
-    width:100%;
+    padding:10px 18px;
     border:none;
     border-radius:10px;
-    background:#2563eb;
+    background:#1e40af;
     color:#fff;
     cursor:pointer
 }
 
 /* MOBILE */
 @media(max-width:900px){
-    .app{grid-template-columns:1fr}
-    .sidebar,.output{display:none}
+    .shell{
+        grid-template-columns:1fr
+    }
+    .sources{
+        order:2
+    }
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="stars"></canvas>
-<div class="grid"></div>
+<canvas id="space"></canvas>
 
 <div class="app">
+<div class="shell">
 
-<div class="sidebar" id="sources"></div>
+<div class="sources" id="sources">
+    <h2>Sources</h2>
+</div>
 
-<div class="center">
-    <div class="display">
-        <h1>Data Query Interface</h1>
-        <p>Select a source and request a random entry</p>
+<div class="main">
+    <div class="header">
+        <h1>Space Query Interface</h1>
+        <p>Random entry retrieval from local text sources</p>
     </div>
-    <button class="action" id="getBtn" disabled>EXECUTE QUERY</button>
+
+    <button class="action" id="runBtn" disabled>Run Query</button>
+
+    <div class="output" id="output"></div>
 </div>
 
-<div class="output">
-    <h2>Query Result</h2>
-    <div id="result"></div>
 </div>
-
 </div>
 
 <script>
-/* STARFIELD */
-const c=document.getElementById('stars'),ctx=c.getContext('2d');
-let w,h,stars=[];
+/* STAR + METEOR BACKGROUND */
+const c=document.getElementById('space'),ctx=c.getContext('2d');
+let w,h,stars=[],meteors=[];
+
 function resize(){
     w=c.width=innerWidth;
     h=c.height=innerHeight;
 }
 onresize=resize;resize();
-for(let i=0;i<250;i++){
-    stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*w})
-}
-function anim(){
-    ctx.fillStyle='#02040f';
-    ctx.fillRect(0,0,w,h);
-    for(const s of stars){
-        s.z-=1.2;
-        if(s.z<=0)s.z=w;
-        const k=128/s.z;
-        const px=s.x*k+w/2;
-        const py=s.y*k+h/2;
-        if(px>0&&px<w&&py>0&&py<h){
-            const size=(1-k)*2;
-            ctx.fillStyle='#fff';
-            ctx.fillRect(px,py,size,size)
-        }
-    }
-    requestAnimationFrame(anim)
-}
-anim();
 
-/* DATA SYSTEM */
+for(let i=0;i<250;i++){
+    stars.push({
+        x:Math.random()*w,
+        y:Math.random()*h,
+        r:Math.random()*1.2+0.3,
+        s:Math.random()*0.4+0.1
+    });
+}
+
+function spawnMeteor(){
+    meteors.push({
+        x:Math.random()*w,
+        y:-50,
+        vx:-4-Math.random()*3,
+        vy:6+Math.random()*4,
+        life:0
+    });
+}
+
+function draw(){
+    ctx.fillStyle="#000";
+    ctx.fillRect(0,0,w,h);
+
+    // stars
+    ctx.fillStyle="#fff";
+    for(const s of stars){
+        s.y+=s.s;
+        if(s.y>h)s.y=0;
+        ctx.fillRect(s.x,s.y,s.r,s.r);
+    }
+
+    // meteors
+    for(let i=meteors.length-1;i>=0;i--){
+        const m=meteors[i];
+        m.x+=m.vx;
+        m.y+=m.vy;
+        m.life++;
+
+        ctx.strokeStyle="rgba(255,255,255,.8)";
+        ctx.beginPath();
+        ctx.moveTo(m.x,m.y);
+        ctx.lineTo(m.x-m.vx*4,m.y-m.vy*4);
+        ctx.stroke();
+
+        if(m.life>30)meteors.splice(i,1);
+    }
+
+    if(Math.random()<0.01)spawnMeteor();
+
+    requestAnimationFrame(draw);
+}
+draw();
+
+/* DATA */
 const FILES=[
  'spotify','disneyplus','tabii','tabipremium',
  'origin','uplay','discord','minecraft','instagram','facebook'
@@ -217,34 +255,37 @@ async function init(){
     }
     renderSources();
 }
+
 function renderSources(){
-    sources.innerHTML=Object.keys(data).map(k=>
-    `<div class="source" onclick="select('${k}')">
-        <div>${k.toUpperCase()}</div>
+    sources.innerHTML='<h2>Sources</h2>' + Object.keys(data).map(k=>
+    `<div class="source" onclick="selectSource('${k}',this)">
+        ${k.toUpperCase()}
         <small>${data[k].length} entries</small>
-    </div>`
+     </div>`
     ).join('');
 }
-function select(k){
+
+function selectSource(k,el){
     document.querySelectorAll('.source').forEach(s=>s.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    el.classList.add('active');
     selected=k;
-    getBtn.disabled=false;
+    runBtn.disabled=false;
 }
-getBtn.onclick=()=>{
+
+runBtn.onclick=()=>{
     const list=data[selected];
     const l=list[Math.floor(Math.random()*list.length)];
     const i=l.indexOf(':');
     const e=l.slice(0,i),p=l.slice(i+1);
-    result.innerHTML=
-    `<div class="result">
-        <div class="email">${e}</div>
-        <div class="pass">${p}</div>
-        <button class="copy" onclick="navigator.clipboard.writeText('${e}:${p}')">COPY</button>
-     </div>`;
+
+    output.innerHTML=
+    `<div class="email">${e}</div>
+     <div class="pass">${p}</div>
+     <button class="copy" onclick="navigator.clipboard.writeText('${e}:${p}')">Copy</button>`;
 };
 
 init();
 </script>
+
 </body>
 </html>
