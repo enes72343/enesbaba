@@ -3,343 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Account Query Panel</title>
+<title>Query Interface</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
-    font-family:Inter,Segoe UI,Tahoma,sans-serif;
-    background:#05060f;
-    color:#e5e7eb;
-    min-height:100vh;
+    font-family:JetBrains Mono,Consolas,monospace;
+    background:#02040f;
+    color:#d1d5db;
+    height:100vh;
     overflow:hidden
 }
 
-/* STAR CANVAS */
-#space{
+/* BACKGROUND */
+canvas{position:fixed;inset:0;z-index:-2}
+.grid{
     position:fixed;
     inset:0;
-    z-index:-1
+    background:
+      linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+    background-size:40px 40px;
+    z-index:-1;
+    animation:gridMove 30s linear infinite
+}
+@keyframes gridMove{
+    from{background-position:0 0,0 0}
+    to{background-position:400px 400px,400px 400px}
 }
 
 /* LAYOUT */
-.wrapper{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px
+.app{
+    display:grid;
+    grid-template-columns:260px 1fr 360px;
+    height:100vh
 }
 
-.panel{
-    width:100%;
-    max-width:900px;
-    background:rgba(10,14,40,.85);
-    border-radius:18px;
-    box-shadow:0 30px 80px rgba(0,0,0,.6);
-    backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,.06)
+/* LEFT */
+.sidebar{
+    border-right:1px solid rgba(255,255,255,.08);
+    padding:18px;
+    overflow:auto
 }
-
-.header{
-    padding:28px;
-    text-align:center;
-    border-bottom:1px solid rgba(255,255,255,.08)
-}
-.header h1{
-    font-size:1.9rem;
-    font-weight:600;
-    letter-spacing:.5px
-}
-.header p{
-    margin-top:8px;
+.sidebar h2{
     font-size:.9rem;
+    margin-bottom:14px;
     opacity:.7
 }
-
-.content{padding:24px}
-
-/* STATUS */
-.stats{
-    background:#0c1130;
-    border:1px solid rgba(255,255,255,.06);
-    padding:12px;
+.source{
+    padding:10px;
+    border:1px solid rgba(255,255,255,.08);
     border-radius:10px;
-    text-align:center;
-    font-size:.9rem;
-    margin-bottom:18px
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:.2s
 }
+.source:hover{background:rgba(255,255,255,.05)}
+.source.active{
+    border-color:#22c55e;
+    background:rgba(34,197,94,.12)
+}
+.source small{opacity:.6}
 
-/* FILE LIST */
-.file-list{
-    background:#080b22;
-    border-radius:12px;
-    padding:12px;
-    margin-bottom:28px
-}
-.file-item{
+/* CENTER */
+.center{
     display:flex;
-    justify-content:space-between;
-    padding:6px 0;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:30px;
+    padding:20px
+}
+.display{
+    width:100%;
+    max-width:520px;
+    background:#050820;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    padding:26px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(34,197,94,.15)
+}
+.display h1{
+    font-size:1.4rem;
+    margin-bottom:10px;
+    font-weight:600
+}
+.display p{
     font-size:.85rem;
-    opacity:.75
+    opacity:.6
 }
+.action{
+    padding:14px 36px;
+    border:none;
+    border-radius:14px;
+    font-size:.9rem;
+    font-weight:600;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:#02040f;
+    cursor:pointer
+}
+.action:disabled{opacity:.4}
 
-/* ACCOUNT TYPES */
-.account-types{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-    gap:14px
+/* RIGHT */
+.output{
+    border-left:1px solid rgba(255,255,255,.08);
+    padding:18px;
+    overflow:auto
 }
-.account-card{
-    background:#0b1030;
-    border:1px solid rgba(255,255,255,.06);
+.output h2{
+    font-size:.9rem;
+    margin-bottom:12px;
+    opacity:.7
+}
+.result{
+    background:#050820;
     border-radius:14px;
     padding:18px;
-    cursor:pointer;
-    transition:.25s
+    border:1px solid rgba(255,255,255,.08)
 }
-.account-card:hover{
-    transform:translateY(-4px);
-    box-shadow:0 12px 30px rgba(0,0,0,.5)
-}
-.account-card.selected{
-    border-color:#22c55e;
-    background:#0e2a1c
-}
-.account-name{
-    font-weight:600;
-    letter-spacing:.3px
-}
-.account-count{
-    font-size:.8rem;
-    opacity:.6;
-    margin-top:6px
-}
-
-/* CONTROLS */
-.controls{
-    display:flex;
-    justify-content:center;
-    gap:14px;
-    margin:30px 0;
-    flex-wrap:wrap
-}
-button{
+.email{word-break:break-all;font-weight:600}
+.pass{margin:12px 0;color:#f87171}
+.copy{
+    padding:10px;
+    width:100%;
     border:none;
-    padding:14px 28px;
-    border-radius:12px;
-    font-size:.95rem;
-    font-weight:600;
-    cursor:pointer;
+    border-radius:10px;
+    background:#2563eb;
     color:#fff;
-    background:linear-gradient(135deg,#2563eb,#1e40af)
+    cursor:pointer
 }
-button.secondary{
-    background:linear-gradient(135deg,#334155,#1e293b)
-}
-button:disabled{
-    opacity:.4;
-    cursor:not-allowed
-}
-
-/* RESULT */
-.result{
-    background:#080b22;
-    border-radius:14px;
-    padding:20px;
-    border:1px solid rgba(255,255,255,.06)
-}
-.account-result{
-    background:#0b1030;
-    border-radius:14px;
-    padding:22px;
-    text-align:center;
-    border:1px solid rgba(34,197,94,.6)
-}
-.account-email{
-    font-size:1.05rem;
-    font-weight:600;
-    word-break:break-all
-}
-.account-password{
-    margin:14px 0;
-    font-family:monospace;
-    color:#f87171
-}
-
-/* LOADING */
-.loading{text-align:center}
-.spinner{
-    width:34px;height:34px;
-    border:4px solid rgba(255,255,255,.15);
-    border-top:4px solid #3b82f6;
-    border-radius:50%;
-    margin:12px auto;
-    animation:spin 1s linear infinite
-}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 /* MOBILE */
-@media(max-width:600px){
-    .header h1{font-size:1.6rem}
+@media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    .sidebar,.output{display:none}
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="space"></canvas>
+<canvas id="stars"></canvas>
+<div class="grid"></div>
 
-<div class="wrapper">
-<div class="panel">
+<div class="app">
 
-<div class="header">
-    <h1>Account Query Panel</h1>
-    <p>Local text sources based random distribution</p>
-</div>
+<div class="sidebar" id="sources"></div>
 
-<div class="content">
-
-<div class="stats" id="stats">Scanning files...</div>
-<div class="file-list" id="fileList"></div>
-
-<div class="account-types" id="accountTypes"></div>
-
-<div class="controls">
-    <button id="getBtn" disabled>Get Account</button>
-    <button class="secondary" id="againBtn" style="display:none">Get Another</button>
-</div>
-
-<div class="result" id="result" style="display:none">
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        Loading
+<div class="center">
+    <div class="display">
+        <h1>Data Query Interface</h1>
+        <p>Select a source and request a random entry</p>
     </div>
-    <div id="resultContent"></div>
+    <button class="action" id="getBtn" disabled>EXECUTE QUERY</button>
 </div>
 
+<div class="output">
+    <h2>Query Result</h2>
+    <div id="result"></div>
 </div>
-</div>
+
 </div>
 
 <script>
 /* STARFIELD */
-const c=document.getElementById('space'),x=c.getContext('2d');
+const c=document.getElementById('stars'),ctx=c.getContext('2d');
 let w,h,stars=[];
 function resize(){
-    w=c.width=window.innerWidth;
-    h=c.height=window.innerHeight;
+    w=c.width=innerWidth;
+    h=c.height=innerHeight;
 }
-window.onresize=resize;resize();
-
-for(let i=0;i<200;i++){
-    stars.push({
-        x:Math.random()*w,
-        y:Math.random()*h,
-        z:Math.random()*w
-    });
+onresize=resize;resize();
+for(let i=0;i<250;i++){
+    stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*w})
 }
-function draw(){
-    x.fillStyle="#05060f";
-    x.fillRect(0,0,w,h);
+function anim(){
+    ctx.fillStyle='#02040f';
+    ctx.fillRect(0,0,w,h);
     for(const s of stars){
-        s.z-=2;
-        if(s.z<=0){s.z=w}
+        s.z-=1.2;
+        if(s.z<=0)s.z=w;
         const k=128/s.z;
         const px=s.x*k+w/2;
         const py=s.y*k+h/2;
-        if(px>=0&&px<=w&&py>=0&&py<=h){
+        if(px>0&&px<w&&py>0&&py<h){
             const size=(1-k)*2;
-            x.fillStyle="#ffffff";
-            x.fillRect(px,py,size,size);
+            ctx.fillStyle='#fff';
+            ctx.fillRect(px,py,size,size)
         }
     }
-    requestAnimationFrame(draw);
+    requestAnimationFrame(anim)
 }
-draw();
+anim();
 
-/* ACCOUNT SYSTEM */
+/* DATA SYSTEM */
 const FILES=[
  'spotify','disneyplus','tabii','tabipremium',
  'origin','uplay','discord','minecraft','instagram','facebook'
 ];
 
-let accounts={},selected=null;
+let data={},selected=null;
 
 async function init(){
- let found=[];
- for(const f of FILES){
-   try{
-     const r=await fetch(f+'.txt');
-     if(r.ok){found.push(f);load(f)}
-   }catch{}
- }
- stats.textContent=found.length
-   ?'Detected: '+found.join(', ').toUpperCase()
-   :'No text files found';
- renderFiles(found);
- renderCards(found);
+    for(const f of FILES){
+        try{
+            const r=await fetch(f+'.txt');
+            if(!r.ok)continue;
+            const t=await r.text();
+            data[f]=t.split('\n').filter(l=>l.includes(':'));
+        }catch{}
+    }
+    renderSources();
 }
-
-async function load(t){
- const r=await fetch(t+'.txt');
- const txt=await r.text();
- accounts[t]=txt.split('\n')
-   .map(l=>l.trim())
-   .filter(l=>l.includes(':'))
-   .map(l=>{
-     const i=l.indexOf(':');
-     return{email:l.slice(0,i),pass:l.slice(i+1)}
-   });
+function renderSources(){
+    sources.innerHTML=Object.keys(data).map(k=>
+    `<div class="source" onclick="select('${k}')">
+        <div>${k.toUpperCase()}</div>
+        <small>${data[k].length} entries</small>
+    </div>`
+    ).join('');
 }
-
-function renderFiles(t){
- fileList.innerHTML=t.map(a=>
- `<div class="file-item"><span>${a}.txt</span><span>${accounts[a]?.length||'...'}</span></div>`
- ).join('');
+function select(k){
+    document.querySelectorAll('.source').forEach(s=>s.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    selected=k;
+    getBtn.disabled=false;
 }
+getBtn.onclick=()=>{
+    const list=data[selected];
+    const l=list[Math.floor(Math.random()*list.length)];
+    const i=l.indexOf(':');
+    const e=l.slice(0,i),p=l.slice(i+1);
+    result.innerHTML=
+    `<div class="result">
+        <div class="email">${e}</div>
+        <div class="pass">${p}</div>
+        <button class="copy" onclick="navigator.clipboard.writeText('${e}:${p}')">COPY</button>
+     </div>`;
+};
 
-function renderCards(t){
- accountTypes.innerHTML=t.map(a=>
- `<div class="account-card" id="c-${a}" onclick="selectType('${a}')">
-   <div class="account-name">${a.toUpperCase()}</div>
-   <div class="account-count">${accounts[a]?.length||0} entries</div>
- </div>`
- ).join('');
-}
-
-function selectType(t){
- document.querySelectorAll('.account-card').forEach(c=>c.classList.remove('selected'));
- document.getElementById('c-'+t).classList.add('selected');
- selected=t;
- getBtn.disabled=false;
-}
-
-function getAccount(){
- if(!selected)return;
- result.style.display='block';
- loading.style.display='block';
- resultContent.innerHTML='';
- setTimeout(()=>{
-   const list=accounts[selected];
-   const a=list[Math.floor(Math.random()*list.length)];
-   loading.style.display='none';
-   resultContent.innerHTML=
-   `<div class="account-result">
-     <div class="account-email">${a.email}</div>
-     <div class="account-password">${a.pass}</div>
-     <button onclick="navigator.clipboard.writeText('${a.email}:${a.pass}')">Copy</button>
-   </div>`;
-   againBtn.style.display='inline-block';
- },500);
-}
-
-getBtn.onclick=getAccount;
-againBtn.onclick=getAccount;
 init();
 </script>
-
 </body>
 </html>
