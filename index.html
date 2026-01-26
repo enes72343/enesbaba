@@ -1,611 +1,278 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Hesap Dağıtıcı</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Hesap Dağıtıcı</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .account-types {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .account-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .account-card:hover {
-            transform: translateY(-5px);
-            border-color: #3498db;
-            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.2);
-        }
-
-        .account-card.selected {
-            border-color: #27ae60;
-            background: #d4edda;
-        }
-
-        .account-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .account-name {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-
-        .account-count {
-            font-size: 0.9em;
-            color: #7f8c8d;
-        }
-
-        .controls {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #27ae60, #219a52);
-        }
-
-        .btn-success:hover {
-            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
-        }
-
-        .btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .result {
-            background: #ecf0f1;
-            border-radius: 10px;
-            padding: 25px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .result.hidden {
-            display: none;
-        }
-
-        .account-result {
-            background: white;
-            border: 2px solid #27ae60;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
-        }
-
-        .account-email {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            word-break: break-all;
-        }
-
-        .account-password {
-            font-size: 1.1em;
-            color: #e74c3c;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 15px;
-        }
-
-        .copy-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        .copy-btn:hover {
-            background: #2980b9;
-        }
-
-        .stats {
-            background: #34495e;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .file-list {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .file-item:last-child {
-            border-bottom: none;
-        }
-    </style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:Segoe UI,Tahoma,sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh;
+    padding:20px
+}
+.container{
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 40px rgba(0,0,0,.15)
+}
+.header{
+    background:linear-gradient(135deg,#2c3e50,#34495e);
+    color:#fff;
+    padding:30px;
+    text-align:center
+}
+.content{padding:25px}
+.stats{
+    background:#f1f3f5;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    margin-bottom:15px;
+    font-weight:500
+}
+.file-list{
+    background:#fafafa;
+    border:1px solid #e9ecef;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:25px
+}
+.file-item{
+    display:flex;
+    justify-content:space-between;
+    padding:8px;
+    font-size:.95rem
+}
+.account-types{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:15px
+}
+.account-card{
+    background:#f8f9fa;
+    border-radius:12px;
+    padding:18px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:.25s;
+    border:2px solid transparent
+}
+.account-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 18px rgba(0,0,0,.12)
+}
+.account-card.selected{
+    border-color:#27ae60;
+    background:#eafaf1
+}
+.account-icon{font-size:2.2rem;margin-bottom:6px}
+.account-name{font-weight:600}
+.account-count{font-size:.85rem;color:#6c757d}
+.controls{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin:30px 0;
+    flex-wrap:wrap
+}
+.btn{
+    border:none;
+    border-radius:10px;
+    padding:14px 26px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer
+}
+.btn-success{
+    background:linear-gradient(135deg,#27ae60,#219a52);
+    color:#fff
+}
+.btn-secondary{
+    background:linear-gradient(135deg,#3498db,#2980b9);
+    color:#fff
+}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.result{
+    background:#f1f3f5;
+    border-radius:12px;
+    padding:20px
+}
+.account-result{
+    background:#fff;
+    border:2px solid #27ae60;
+    border-radius:12px;
+    padding:20px;
+    text-align:center
+}
+.account-email{font-size:1.2rem;font-weight:600}
+.account-password{font-family:monospace;color:#e74c3c;margin:10px 0}
+.copy-btn{
+    background:#3498db;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+    cursor:pointer
+}
+.loading{text-align:center}
+.spinner{
+    width:36px;height:36px;
+    border:4px solid #ddd;
+    border-top:4px solid #3498db;
+    border-radius:50%;
+    margin:10px auto;
+    animation:spin 1s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{
+    background:#f8d7da;
+    color:#721c24;
+    padding:12px;
+    border-radius:8px;
+    text-align:center
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎲 Random Hesap Dağıtıcı</h1>
-            <p>Aynı klasördeki TXT dosyalarından rastgele hesap dağıtır</p>
-        </div>
-
-        <div class="content">
-            <div class="stats" id="stats">
-                📁 Klasördeki TXT dosyaları taranıyor...
-            </div>
-
-            <div class="file-list" id="fileList">
-                <!-- Dosya listesi buraya gelecek -->
-            </div>
-
-            <h2 style="text-align: center; margin: 30px 0 20px 0; color: #2c3e50;">
-                🎯 Hesap Türünü Seçin
-            </h2>
-
-            <div class="account-types" id="accountTypes">
-                <!-- Hesap türleri buraya gelecek -->
-            </div>
-
-            <div class="controls">
-                <button class="btn btn-success" id="getAccountBtn" disabled>
-                    🎲 Random Hesap Getir
-                </button>
-                <button class="btn" id="getAnotherBtn" style="display: none;">
-                    🔄 Yeni Hesap Getir
-                </button>
-            </div>
-
-            <div class="result hidden" id="result">
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Hesap aranıyor...</p>
-                </div>
-                
-                <div id="resultContent"></div>
-            </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>🎲 Random Hesap Dağıtıcı</h1>
+        <p>Aynı klasördeki TXT dosyalarından rastgele hesap verir</p>
     </div>
 
-    <script>
-        class AccountDistributor {
-            constructor() {
-                this.availableTypes = [];
-                this.accounts = {};
-                this.selectedType = null;
-            }
+    <div class="content">
+        <div class="stats" id="stats">Dosyalar taranıyor...</div>
+        <div class="file-list" id="fileList"></div>
 
-            // Klasördeki TXT dosyalarını tara
-            async scanTextFiles() {
-                const fileExtensions = ['tabii', 'tabipremium', 'spotify', 'origin', 'uplay', 'discord', 'minecraft', 'instagram', 'facebook'];
-                this.availableTypes = [];
+        <h2 style="text-align:center;margin:20px 0">🎯 Hesap Türü</h2>
+        <div class="account-types" id="accountTypes"></div>
 
-                for (const ext of fileExtensions) {
-                    const fileName = `${ext}.txt`;
-                    try {
-                        const response = await fetch(fileName);
-                        if (response.ok) {
-                            this.availableTypes.push(ext);
-                        }
-                    } catch (error) {
-                        // Dosya yoksa atla
-                        console.log(`${fileName} bulunamadı`);
-                    }
-                }
+        <div class="controls">
+            <button class="btn btn-success" id="getBtn" disabled>🎲 Hesap Getir</button>
+            <button class="btn btn-secondary" id="againBtn" style="display:none">🔄 Yenisi</button>
+        </div>
 
-                return this.availableTypes;
-            }
+        <div class="result" id="result" style="display:none">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                Yükleniyor...
+            </div>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+</div>
 
-            // Belirli bir türdeki hesapları yükle
-            async loadAccounts(type) {
-                if (this.accounts[type]) {
-                    return this.accounts[type];
-                }
+<script>
+const FILES=[
+ 'spotify',
+ 'disneyplus',
+ 'tabii',
+ 'tabipremium',
+ 'origin',
+ 'uplay',
+ 'discord',
+ 'minecraft',
+ 'instagram',
+ 'facebook'
+];
 
-                try {
-                    const response = await fetch(`${type}.txt`);
-                    if (!response.ok) {
-                        throw new Error('Dosya bulunamadı');
-                    }
+const ICONS={
+ spotify:'🎵',
+ disneyplus:'🏰',
+ tabii:'📺',
+ tabipremium:'⭐',
+ origin:'🕹️',
+ uplay:'🎯',
+ discord:'💬',
+ minecraft:'⛏️',
+ instagram:'📷',
+ facebook:'👥'
+};
 
-                    const content = await response.text();
-                    const accounts = this.parseAccounts(content);
-                    this.accounts[type] = accounts;
-                    return accounts;
+let accounts={},selected=null;
 
-                } catch (error) {
-                    console.error(`${type} hesapları yüklenirken hata:`, error);
-                    throw error;
-                }
-            }
+async function init(){
+ let found=[];
+ for(const f of FILES){
+   try{
+     const r=await fetch(f+'.txt');
+     if(r.ok){found.push(f);load(f)}
+   }catch{}
+ }
+ document.getElementById('stats').innerText=
+   found.length?`Bulunanlar: ${found.join(', ').toUpperCase()}`:'TXT yok';
+ renderFiles(found);
+ renderCards(found);
+}
 
-            // TXT içeriğini parse et
-            parseAccounts(content) {
-                const lines = content.split('\n');
-                const accounts = [];
+async function load(type){
+ const r=await fetch(type+'.txt');
+ const t=await r.text();
+ accounts[type]=t.split('\n')
+   .map(l=>l.trim())
+   .filter(l=>l.includes(':'))
+   .map(l=>{
+     const i=l.indexOf(':');
+     return{email:l.slice(0,i),pass:l.slice(i+1)}
+   });
+}
 
-                for (const line of lines) {
-                    const trimmedLine = line.trim();
-                    
-                    if (!trimmedLine) continue;
+function renderFiles(types){
+ fileList.innerHTML=types.map(t=>
+ `<div class="file-item"><span>${t}.txt</span><span>${accounts[t]?.length||'...'}</span></div>`
+ ).join('');
+}
 
-                    if (trimmedLine.includes(':')) {
-                        const [email, ...passwordParts] = trimmedLine.split(':');
-                        const password = passwordParts.join(':').trim();
+function renderCards(types){
+ accountTypes.innerHTML=types.map(t=>
+ `<div class="account-card" onclick="selectType('${t}')" id="c-${t}">
+   <div class="account-icon">${ICONS[t]||'📁'}</div>
+   <div class="account-name">${t.toUpperCase()}</div>
+   <div class="account-count">${accounts[t]?.length||0} hesap</div>
+ </div>`
+ ).join('');
+}
 
-                        if (email.trim() && password) {
-                            accounts.push({
-                                email: email.trim(),
-                                password: password,
-                                fullText: trimmedLine
-                            });
-                        }
-                    }
-                }
+function selectType(t){
+ document.querySelectorAll('.account-card').forEach(c=>c.classList.remove('selected'));
+ document.getElementById('c-'+t).classList.add('selected');
+ selected=t;
+ getBtn.disabled=false;
+}
 
-                return accounts;
-            }
+function getAccount(){
+ if(!selected)return;
+ result.style.display='block';
+ loading.style.display='block';
+ resultContent.innerHTML='';
+ setTimeout(()=>{
+   const list=accounts[selected];
+   const a=list[Math.floor(Math.random()*list.length)];
+   loading.style.display='none';
+   resultContent.innerHTML=
+   `<div class="account-result">
+     <div class="account-email">${a.email}</div>
+     <div class="account-password">${a.pass}</div>
+     <button class="copy-btn" onclick="copy('${a.email}','${a.pass}')">📋 Kopyala</button>
+   </div>`;
+   againBtn.style.display='inline-block';
+ },500);
+}
 
-            // Random hesap seç
-            getRandomAccount(type) {
-                const accounts = this.accounts[type];
-                if (!accounts || accounts.length === 0) {
-                    return null;
-                }
+function copy(e,p){
+ navigator.clipboard.writeText(`Email: ${e}\nŞifre: ${p}`);
+}
 
-                const randomIndex = Math.floor(Math.random() * accounts.length);
-                return accounts[randomIndex];
-            }
-
-            // Tür için hesap sayısını getir
-            getAccountCount(type) {
-                return this.accounts[type] ? this.accounts[type].length : 0;
-            }
-        }
-
-        // Global distributor
-        const distributor = new AccountDistributor();
-
-        // UI elementleri
-        const statsElement = document.getElementById('stats');
-        const fileListElement = document.getElementById('fileList');
-        const accountTypesElement = document.getElementById('accountTypes');
-        const getAccountBtn = document.getElementById('getAccountBtn');
-        const getAnotherBtn = document.getElementById('getAnotherBtn');
-        const resultElement = document.getElementById('result');
-        const resultContentElement = document.getElementById('resultContent');
-        const loadingElement = document.getElementById('loading');
-
-        // Sayfa yüklendiğinde
-        document.addEventListener('DOMContentLoaded', async () => {
-            await initializeApp();
-        });
-
-        // Uygulamayı başlat
-        async function initializeApp() {
-            showLoading('📁 Klasördeki TXT dosyaları taranıyor...');
-
-            try {
-                const availableTypes = await distributor.scanTextFiles();
-                
-                if (availableTypes.length === 0) {
-                    showError('Klasörde hiç TXT dosyası bulunamadı!');
-                    return;
-                }
-
-                updateStats(availableTypes);
-                displayFileList(availableTypes);
-                displayAccountTypes(availableTypes);
-                
-                showSuccess(`✅ ${availableTypes.length} farklı hesap türü bulundu`);
-
-            } catch (error) {
-                showError('Dosya tarama hatası: ' + error.message);
-            }
-        }
-
-        // Hesap türlerini göster
-        function displayAccountTypes(types) {
-            const icons = {
-                steam: '🎮', netflix: '📺', spotify: '🎵', 
-                origin: '🕹️', uplay: '🎯', discord: '💬',
-                minecraft: '⛏️', instagram: '📷', facebook: '👥'
-            };
-
-            let html = '';
-            
-            types.forEach(type => {
-                const icon = icons[type] || '📁';
-                const displayName = type.charAt(0).toUpperCase() + type.slice(1);
-                
-                html += `
-                    <div class="account-card" onclick="selectAccountType('${type}')" id="card-${type}">
-                        <div class="account-icon">${icon}</div>
-                        <div class="account-name">${displayName}</div>
-                        <div class="account-count" id="count-${type}">Yükleniyor...</div>
-                    </div>
-                `;
-            });
-
-            accountTypesElement.innerHTML = html;
-
-            // Her tür için hesap sayısını yükle
-            types.forEach(type => {
-                loadAccountCount(type);
-            });
-        }
-
-        // Hesap sayısını yükle
-        async function loadAccountCount(type) {
-            try {
-                const accounts = await distributor.loadAccounts(type);
-                document.getElementById(`count-${type}`).textContent = `${accounts.length} hesap`;
-            } catch (error) {
-                document.getElementById(`count-${type}`).textContent = 'Hata!';
-            }
-        }
-
-        // Hesap türü seç
-        async function selectAccountType(type) {
-            // Tüm kartlardan seçimi kaldır
-            document.querySelectorAll('.account-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-
-            // Seçili kartı işaretle
-            document.getElementById(`card-${type}`).classList.add('selected');
-            distributor.selectedType = type;
-
-            // Butonu aktif et
-            getAccountBtn.disabled = false;
-
-            showInfo(`✅ ${type.toUpperCase()} seçildi. "Random Hesap Getir" butonuna tıklayın.`);
-        }
-
-        // Random hesap getir
-        async function getRandomAccount() {
-            if (!distributor.selectedType) {
-                showError('Lütfen önce bir hesap türü seçin!');
-                return;
-            }
-
-            showLoading('Hesap aranıyor...');
-            resultElement.classList.remove('hidden');
-            loadingElement.style.display = 'block';
-            resultContentElement.innerHTML = '';
-
-            try {
-                // Hesapları yükle (eğer yüklenmediyse)
-                await distributor.loadAccounts(distributor.selectedType);
-                
-                const account = distributor.getRandomAccount(distributor.selectedType);
-                
-                if (!account) {
-                    throw new Error('Bu türde hesap bulunamadı');
-                }
-
-                displayAccountResult(account);
-                getAnotherBtn.style.display = 'inline-block';
-
-            } catch (error) {
-                showError('Hesap getirilemedi: ' + error.message);
-            } finally {
-                loadingElement.style.display = 'none';
-            }
-        }
-
-        // Hesap sonucunu göster
-        function displayAccountResult(account) {
-            const type = distributor.selectedType;
-            const displayName = type.charAt(0).toUpperCase() + type.slice(1);
-            
-            resultContentElement.innerHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h3>🎉 ${displayName} Hesabınız Hazır!</h3>
-                    <p>İşte rastgele seçilen hesap:</p>
-                </div>
-                
-                <div class="account-result">
-                    <div class="account-email">📧 ${account.email}</div>
-                    <div class="account-password">🔑 ${account.password}</div>
-                    <button class="copy-btn" onclick="copyAccount('${account.email}', '${account.password}')">
-                        📋 Hesabı Kopyala
-                    </button>
-                </div>
-                
-                <div style="text-align: center; margin-top: 15px; color: #7f8c8d;">
-                    🔄 Yeni bir hesap için "Yeni Hesap Getir" butonuna tıklayın
-                </div>
-            `;
-        }
-
-        // Hesabı kopyala
-        function copyAccount(email, password) {
-            const text = `Email: ${email}\nŞifre: ${password}`;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                showTemporaryMessage('✅ Hesap panoya kopyalandı!');
-            }).catch(err => {
-                showError('Kopyalama başarısız: ' + err);
-            });
-        }
-
-        // Dosya listesini göster
-        function displayFileList(types) {
-            let html = '<h3>📂 Bulunan Dosyalar:</h3>';
-            
-            types.forEach(type => {
-                html += `
-                    <div class="file-item">
-                        <span>${type}.txt</span>
-                        <span id="file-count-${type}">Yükleniyor...</span>
-                    </div>
-                `;
-            });
-            
-            fileListElement.innerHTML = html;
-        }
-
-        // İstatistikleri güncelle
-        function updateStats(types) {
-            statsElement.textContent = `✅ ${types.length} farklı hesap türü bulundu: ${types.map(t => t.toUpperCase()).join(', ')}`;
-        }
-
-        // UI yardımcı fonksiyonları
-        function showLoading(message) {
-            statsElement.innerHTML = `<div class="loading">${message}</div>`;
-        }
-
-        function showSuccess(message) {
-            statsElement.innerHTML = `<div style="color: #27ae60;">${message}</div>`;
-        }
-
-        function showError(message) {
-            resultContentElement.innerHTML = `<div class="error">${message}</div>`;
-        }
-
-        function showInfo(message) {
-            const infoDiv = document.createElement('div');
-            infoDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0;';
-            infoDiv.textContent = message;
-            resultContentElement.innerHTML = '';
-            resultContentElement.appendChild(infoDiv);
-        }
-
-        function showTemporaryMessage(message) {
-            const messageDiv = document.createElement('div');
-            messageDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #27ae60;
-                color: white;
-                padding: 15px;
-                border-radius: 5px;
-                z-index: 1000;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            `;
-            messageDiv.textContent = message;
-            document.body.appendChild(messageDiv);
-
-            setTimeout(() => {
-                document.body.removeChild(messageDiv);
-            }, 2000);
-        }
-
-        // Event listener'lar
-        getAccountBtn.addEventListener('click', getRandomAccount);
-        getAnotherBtn.addEventListener('click', getRandomAccount);
-    </script>
+getBtn.onclick=getAccount;
+againBtn.onclick=getAccount;
+init();
+</script>
 </body>
 </html>
